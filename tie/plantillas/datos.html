@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+
+{% block titulo %}
+	Tie GPS - Ubíca a tus clientes, controla tus ventas
+{% endblock %}
+
+{% block menu %}
+	<span style='color: #fff;'>|</span>
+	<a href='/datos'>Mis Datos</a>
+	<a href='/lista-clientes'>Clientes</a>
+	<a href='/agenda'>Agenda</a>
+	<a href='/logout'>Cerrar Sesión</a>
+{% endblock %}
+
+
+{% block contenido %}
+	<form action='' method='post' id='formulario'>{% csrf_token %}
+		<ul>
+			<li>
+				<label for="id_nombre">Nombre:</label>
+				<input id="id_nombre" type="text" name="nombre" maxlength="30" value="{{ usuario.first_name }}" />
+			</li>
+
+			<li>
+				<label for="id_apellido">Apellido:</label>
+				<input id="id_apellido" type="text" name="apellido" maxlength="30" value="{{ usuario.last_name }}" />
+			</li>
+
+			<li>
+				<label for="id_email">Email:</label>
+				<input id="id_email" type="text" name="email" maxlength="75" value="{{ usuario.email }}" />
+			</li>
+
+			<li class='registro'>
+				<input type='submit' value='Guardar' />
+			</li>
+		</ul>
+	</form>
+{% endblock %}

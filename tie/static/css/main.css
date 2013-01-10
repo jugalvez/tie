@@ -1,0 +1,120 @@
+body{
+	background: 
+			url(/static/img/bg_top.png) 0 0 repeat-x,
+			url(/static/img/bg_bottom.png) 0 0 repeat
+	;
+	background-size: auto 3em, auto;
+	color: #000;
+	font-size: 16px;
+	font-family: verdana;
+	line-height: 1.5em;
+	margin: 0;
+	padding: 0;
+}
+
+ul, p, div, a, img{
+	border: 0; 
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	text-decoration: none;
+}
+
+section a{
+	color: #098aa7;
+}
+
+section a:hover{
+	
+}
+
+header{
+	margin: 0.5em auto 0 auto;	
+	width: 70%;
+}
+
+header nav a{
+	color: #fff;
+	display: inline-block;
+	line-height: 1em;
+	margin: 0 1em 0 0;
+	padding: 0.5em; 
+}
+
+header nav a:hover{
+	border-radius: 5px;
+	color: #000;
+	background-color: #ddd;
+}
+
+#ppal{
+	margin: 8% auto 0 auto;
+	width: 70%;
+}
+
+/*
+		PRINCIPAL
+*/
+
+#logo, #descargar{
+	display: inline-block;
+	vertical-align: top;
+	margin-bottom: 10%;
+}
+
+#ventajas{
+	display: inline-block;
+	font-size: 1em;
+	list-style: none;
+	margin: 0 10% 10%;
+	vertical-align: top;
+}
+
+#ventajas li{
+	line-height: 2em;
+}
+
+#ventajas li span{
+	font-weight: bold;
+}
+
+
+/*
+		Formularios
+*/
+
+form{
+	margin: 0 0 0 5%;
+	width: 70%;
+}
+
+form li{
+	line-height: 3em;
+}
+
+form li label{
+	display: inline-block;
+	width: 180px;
+}
+
+.registro input{
+	background: #ccc;
+	border: 0;
+	border-radius: 5px;
+	display: inline-block;
+	letter-spacing: 0.1em;
+	margin-left: 35%;
+	padding: 0.5em 1em; 
+}
+
+.helptext{
+	color: #333;
+	display: inline-block;
+	font-size: 0.8em;
+}
+
+.errorlist{
+	color: #f00;
+	font-size: 0.8em;
+}
+
