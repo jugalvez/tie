@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block titulo %}
+	Tie GPS - Ubíca a tus clientes, controla tus ventas
+{% endblock %}
+
+
+{% block header %}
+	<script type="text/javascript">
+		$(document).on('ready', function(){
+			$('#lista a').on('click', function(){
+				$(this).next().toggle();
+			})
+		});
+	</script>
+{% endblock %}
+
+{% block menu %}
+	<span style='color: #fff;'>|</span>
+	<a href='/datos'>Mis Datos</a>
+	<a href='/clientes' class='activo'>Clientes</a>
+	<a href='/agenda'>Agenda</a>
+	<a href='/logout'>Cerrar Sesión</a>
+{% endblock %}
+
+
+{% block contenido %}
+
+	<h2><a href='/clientes/nuevo'>+ Agregar Nuevo Cliente</a></h2>
+
+	<ul id='lista'>
+		{% for cliente in clientes %}
+			<li>
+				<a href='#'>
+					<h3>{{ cliente.empresa }}</h3>
+					<span> {{ cliente.nombre }} </span>
+				</a>
+
+				<div class='datos-cliente'>
+					<h4>Contacto</h4>
+					<p>
+						<span>Teléfono:</span> {{ cliente.telefono }} <br /> 
+						<span>Celular:</span> {{ cliente.celular }} <br /> 
+						<span>Otro:</span> {{ cliente.radio }} <br /> 
+						<span>E-mail:</span> {{ cliente.mail }} <br /> 
+					</p>
+
+					<h4>Nota</h4>
+					<p>
+						{{ cliente.nota }}
+					</p>
+				</div>
+			</li>
+		{% empty %}
+			<li><h3>Aun no hay clientes capturados</h3></li>
+		{% endfor %}
+	</ul>
+
+{% endblock %}

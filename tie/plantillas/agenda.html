@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block titulo %}
+	Tie GPS - Ubíca a tus clientes, controla tus ventas
+{% endblock %}
+
+
+{% block header %}
+	<script type="text/javascript">
+		$(document).on('ready', function(){
+			$('#lista a').on('click', function(){
+				$(this).next().toggle();
+			})
+		});
+	</script>
+{% endblock %}
+
+{% block menu %}
+	<span style='color: #fff;'>|</span>
+	<a href='/datos'>Mis Datos</a>
+	<a href='/clientes'>Clientes</a>
+	<a href='/agenda' class='activo'>Agenda</a>
+	<a href='/logout'>Cerrar Sesión</a>
+{% endblock %}
+
+
+{% block contenido %}
+
+	<h2><a href='/agenda/nuevo'>+ Crear Nuevo Evento</a></h2>
+
+	<ul id='lista'>
+		{% for evento in eventos %}
+			<li>
+				<a href='#'>
+					<h3>{{ evento.cliente.empresa }}</h3>
+					<span> {{ evento.asunto }} </span>
+				</a>
+
+				<div class='datos-cliente'>
+					<h4>Evento</h4>
+					<p>
+						{{ evento.detalle }} <br /> 
+					</p>
+
+					<p>
+						El <span>{{ evento.fecha }}</span> a las <span>{{ evento.hora }}</span>
+					</p>
+
+				</div>
+			</li>
+		{% empty %}
+			<li><h3>Aun no hay eventos asignados</h3></li>
+		{% endfor %}
+	</ul>
+
+{% endblock %}

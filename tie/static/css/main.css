@@ -12,7 +12,7 @@ body{
 	padding: 0;
 }
 
-ul, p, div, a, img{
+ul, p, div, a, img, h1, h2, h3, h4{
 	border: 0; 
 	list-style: none;
 	margin: 0;
@@ -20,13 +20,12 @@ ul, p, div, a, img{
 	text-decoration: none;
 }
 
-section a{
-	color: #098aa7;
+h2{
+	color: #434e60;
+	font-size: 1.5em;
+	margin: 4% 0;
 }
 
-section a:hover{
-	
-}
 
 header{
 	margin: 0.5em auto 0 auto;	
@@ -47,10 +46,40 @@ header nav a:hover{
 	background-color: #ddd;
 }
 
+.activo{
+	border-radius: 5px;
+	color: #000;
+	background-color: #ddd;
+}
+
+
+
 #ppal{
 	margin: 8% auto 0 auto;
+	min-height: 30.5em;
 	width: 70%;
 }
+
+
+
+#ppal a{
+	color: #098aa7;
+}
+
+
+footer{
+	background: url(/static/img/bg_top.png) 0 0 repeat;
+	margin: 4em 0 0 0;
+	height: 5em;
+	width: 100%;
+}
+
+footer p{
+	color: #fff;
+	padding-top: 2em;
+	text-align: center;
+}
+
 
 /*
 		PRINCIPAL
@@ -97,13 +126,19 @@ form li label{
 	width: 180px;
 }
 
+form input[type='text'],form input[type='password'], textarea{
+	padding: 0.4em;
+	width: 50%;
+}
+
 .registro input{
 	background: #ccc;
 	border: 0;
 	border-radius: 5px;
 	display: inline-block;
 	letter-spacing: 0.1em;
-	margin-left: 35%;
+	margin-left: 64%;
+	margin-top: 1.5em;
 	padding: 0.5em 1em; 
 }
 
@@ -118,3 +153,26 @@ form li label{
 	font-size: 0.8em;
 }
 
+#lista{
+	margin-left: 3em; 
+}
+
+#lista li{
+	border-top: 0.5em solid #ccc;
+	display: inline-block;
+	margin: 0 2.5% 2.5% 0;
+	width: 45%;
+	vertical-align: top;
+}
+
+#lista h3, h4{
+	margin: 1em 0 0 0;
+}
+
+#lista .datos-cliente{
+	display: none;
+}
+
+#lista .datos-cliente p span{
+	font-weight: bold;
+}

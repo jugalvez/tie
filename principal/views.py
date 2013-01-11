@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from principal.models import Cliente, Facturacion, Visita, Venta, Pago, Inventario, Pedido, Pago_Producto, Agenda
-from principal.forms import DatosForm
+from principal.forms import DatosForm, ClienteForm, FacturacionForm, AgendaForm
 
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.forms import AuthenticationForm
@@ -59,26 +59,71 @@ def panel(request):
 	usuario = request.user
 	return render_to_response('panel.html', {'usuario': usuario } ,context_instance = RequestContext(request))
 
+
 @login_required(login_url='/login')
 def datos(request):
-	
-	usuario = User.objects.get(id = request.user.id)
 
 	if request.method == 'POST':
 		formulario = DatosForm(request.POST)
 
-		if formulario.is_valid:
+		if formulario.is_valid():
 			nombre = request.POST['nombre']
 			apellido = request.POST['apellido']
 			mail = request.POST['email']
+			
+			usuario_update = User.objects.filter(id = request.user.id)
+			usuario_update.update(first_name = nombre, last_name = apellido, email = mail)
 
-
-			usuario.update(first_name = nombre, last_name = apellido, email = mail)
-
-	formulario = DatosForm(request.POST)
+	usuario = User.objects.get(id = request.user.id)
+	formulario = DatosForm()
 		
 	return render_to_response('datos.html', {'formulario': formulario, 'usuario': usuario}, context_instance=RequestContext(request))
 
+
+@login_required(login_url='/login')
+def clientes(request):
+	clientes = Cliente.objects.filter(usuario_id = request.user.id)
+	return render_to_response('lista-clientes.html', {'clientes': clientes}, context_instance=RequestContext(request))
+
+
+@login_required(login_url='/login')
+def nuevoCliente(request):
+	if request.method == 'POST':
+		formulario = ClienteForm(request.POST)
+		form_facturacion = FacturacionForm(request.POST)
+
+		if formulario.is_valid():
+			formulario.save()
+
+		#if form_facturacion.is_valid:
+		#	form_facturacion.save()
+		
+			return HttpResponseRedirect('/clientes')
+	else:
+		formulario = ClienteForm()
+		form_facturacion = FacturacionForm()
+
+	return render_to_response('nuevo-cliente.html', {'formulario': formulario}, context_instance=RequestContext(request))
+
+
+@login_required(login_url='/login')
+def agenda(request):
+	eventos = Agenda.objects.filter(usuario_id = request.user.id)
+	return render_to_response('agenda.html', {'eventos': eventos}, context_instance=RequestContext(request))
+
+
+@login_required(login_url='/login')
+def nuevoEvento(request):
+	if request.method == 'POST':
+		formulario = AgendaForm(request.POST)
+
+		if formulario.is_valid():
+			formulario.save()
+			return HttpResponseRedirect('/agenda')
+	else:
+		formulario = AgendaForm()
+
+	return render_to_response('nuevo-evento.html', {'formulario': formulario}, context_instance=RequestContext(request))
 
 
 @login_required(login_url='/login')

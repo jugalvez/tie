@@ -111,6 +111,7 @@ class Agenda(models.Model):
 	fecha = models.DateField()
 	hora = models.CharField(max_length = 10)
 	cliente = models.ForeignKey(Cliente)
+	usuario = models.ForeignKey(User)
 
 	def __unicode__(self):
 		return self.asunto

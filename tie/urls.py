@@ -11,6 +11,12 @@ urlpatterns = patterns('',
 	url(r'^login/$', 'principal.views.login'),
 	url(r'^panel/$', 'principal.views.panel'),
 	url(r'^datos/$', 'principal.views.datos'),
+	url(r'^clientes/$', 'principal.views.clientes'),
+	url(r'^clientes/nuevo/$', 'principal.views.nuevoCliente'),
+	url(r'^agenda/$', 'principal.views.agenda'),
+	url(r'^agenda/nuevo/$', 'principal.views.nuevoEvento'),
+
+
 
 	url(r'^logout/$', 'principal.views.salir'),
 
