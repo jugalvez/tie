@@ -19,7 +19,6 @@ class Cliente(models.Model):
 
 
 class Facturacion(models.Model):
-	cliente = models.ForeignKey(Cliente)
 	rfc = models.CharField(max_length = 20, blank = True, null = True)
 	calle = models.CharField(max_length = 80, blank = True, null = True)
 	colonia = models.CharField(max_length = 80, blank = True, null = True)
@@ -27,7 +26,8 @@ class Facturacion(models.Model):
 	municipio = models.CharField(max_length = 80, blank = True, null = True)
 	estado = models.CharField(max_length = 35, blank = True, null = True)
 	giro_comercial = models.CharField(max_length = 60, blank = True, null = True)
-
+	cliente = models.ForeignKey(Cliente)
+	
 	def __unicode__(self):
 		return self.cliente.empresa
 

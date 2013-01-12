@@ -14,12 +14,12 @@ class DatosForm(forms.Form):
 class ClienteForm(ModelForm):
 	class Meta:
 		model = Cliente
-		#exclude = ('usuario', 'estatus', 'tipo_venta', )
+		exclude = ('usuario', 'estatus', 'tipo_venta', )
 
 class FacturacionForm(ModelForm):
 	class Meta:
 		model = Facturacion		
-		#exclude = ('cliente')
+		exclude = ('cliente')
 
 class AgendaForm(ModelForm):
 	class Meta:

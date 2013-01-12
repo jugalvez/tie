@@ -16,7 +16,7 @@ urlpatterns = patterns('',
 	url(r'^agenda/$', 'principal.views.agenda'),
 	url(r'^agenda/nuevo/$', 'principal.views.nuevoEvento'),
 
-
+	url(r'^hola/$', 'app.views.hola'),
 
 	url(r'^logout/$', 'principal.views.salir'),
 

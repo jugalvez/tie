@@ -17,7 +17,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 def inicio(request):
-	return render_to_response('inicio.html', context_instance = RequestContext(request))
+	us = request.user
+	return render_to_response('inicio.html', {'us': us} ,context_instance = RequestContext(request))
 
 
 def login(request):
@@ -89,21 +90,27 @@ def clientes(request):
 @login_required(login_url='/login')
 def nuevoCliente(request):
 	if request.method == 'POST':
-		formulario = ClienteForm(request.POST)
-		form_facturacion = FacturacionForm(request.POST)
+		# Creamos un objeto para colocar campos manualmente, despues se lo asignamos al formulario que recibimos
+		cliente = Cliente(usuario_id = request.user.id, estatus = 1, tipo_venta = 0)
+		formulario = ClienteForm(request.POST, instance = cliente)
+
+		#Si el formulario es valido, guardamos el nuevo registro; asignamos campos manualmente a FacturacionForm
 
 		if formulario.is_valid():
-			formulario.save()
+			id_cliente = formulario.save()
+			facturacion = Facturacion(cliente_id = id_cliente.id)
+			form_facturacion = FacturacionForm(request.POST, instance = facturacion)
 
-		#if form_facturacion.is_valid:
-		#	form_facturacion.save()
+			# Si es valido, guardamos el nuevo registro
+			if form_facturacion.is_valid:
+				form_facturacion.save()
 		
 			return HttpResponseRedirect('/clientes')
 	else:
 		formulario = ClienteForm()
 		form_facturacion = FacturacionForm()
 
-	return render_to_response('nuevo-cliente.html', {'formulario': formulario}, context_instance=RequestContext(request))
+	return render_to_response('nuevo-cliente.html', {'formulario': formulario, 'form_facturacion': form_facturacion}, context_instance=RequestContext(request))
 
 
 @login_required(login_url='/login')
