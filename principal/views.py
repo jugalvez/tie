@@ -1,3 +1,5 @@
+#encoding: utf-8
+
 from django.contrib.auth.models import User
 from principal.models import Cliente, Facturacion, Visita, Venta, Pago, Inventario, Pedido, Pago_Producto, Agenda
 from principal.forms import DatosForm, ClienteForm, FacturacionForm, AgendaForm
