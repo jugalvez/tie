@@ -24,3 +24,4 @@ class FacturacionForm(ModelForm):
 class AgendaForm(ModelForm):
 	class Meta:
 		model = Agenda
+		exclude = ('usuario')

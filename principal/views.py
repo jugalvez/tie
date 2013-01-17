@@ -124,7 +124,8 @@ def agenda(request):
 @login_required(login_url='/login')
 def nuevoEvento(request):
 	if request.method == 'POST':
-		formulario = AgendaForm(request.POST)
+		agenda = Agenda(usuario_id = request.user.id)
+		formulario = AgendaForm(request.POST, instance = agenda)
 
 		if formulario.is_valid():
 			formulario.save()

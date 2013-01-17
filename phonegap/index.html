@@ -1,0 +1,835 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+	<title>TieGPS</title> 
+	<meta charset='utf-8'>
+	<meta name='viewport' content='width=device-width, initial-scale=1'> 
+	<link rel='stylesheet' href='http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css' />
+	
+	<script src='jquery-1.8.3.min.js'></script>
+	<script src='jquery.mobile-1.2.0.min.js'></script>
+
+	<style type='text/css'>
+		h1 a{
+			font-style: none;
+			text-decoration: none;
+			color: #fff !important;
+		}
+
+		label{
+			display: block;
+			margin: 1.5em 0;
+		}
+
+		input::-webkit-input-placeholder {
+		    color: #999;
+		}
+
+		input:-moz-placeholder {
+		    color: #999;
+		}
+
+		input::-webkit-textarea-placeholder {
+		    color: #999;
+		}
+
+		textarea:-moz-placeholder {
+		    color: #999;
+		}
+
+
+
+	</style>
+
+    <script type='text/javascript'>
+
+		var sesion = localStorage.getItem('sesion');
+		
+		if (!sesion)
+			$.mobile.changePage($('/'));
+
+
+
+    	// Inicio de sesion
+
+    	function login(){
+    		var user = $('#usuario').attr('value')
+    		var pass = $('#password').attr('value')
+			
+			$.ajax({
+			        url: 'http://192.168.1.72:8000/hola/', 
+			        type: 'POST',
+			        data: {user: user, pass: pass},
+			        dataType: 'json'
+		    }).done(function(data){
+		    	if (data.estatus==200){
+		    		localStorage.setItem('sesion', data.mensaje);
+		    		$.mobile.changePage($('#lista-clientes'));
+				}
+		    	else
+		    		$('#carga').html(data.mensaje)
+		    });
+		}
+
+		//Cargamos la lista de clientes, segun cada usuario
+
+		function cargaClientes(){
+
+			$('#clientes').empty();
+
+			sesion = localStorage.getItem('sesion');
+
+			$.ajax({
+			        url: 'http://192.168.1.72:8000/app/clientes/', 
+			        type: 'POST',
+			        data: {id: sesion},
+			        dataType: 'json'
+		    }).done(function(data){
+		    	if (data.estatus==200)
+		    		if (data.mensaje.length == 2)
+						$('#clientes').append(
+							$('<li>').html(
+								'No tienes clientes asignados'
+							)
+						);
+		    		else{
+		    			
+		    			datos = $.parseJSON(data.mensaje);
+
+						$.each(datos, function(key, val) {
+							
+							$('#clientes').append(
+								$('<li>').append(
+									$('<a>').attr('href', '#').attr('data-cliente_id', val['pk']).attr('data-cliente_nombre', val['fields']['empresa']).html(
+										val['fields']['nombre'] + ' - ' + val['fields']['empresa']
+									)
+								)
+							);
+		    			});
+		    		}
+
+				    $('#clientes').listview('refresh');
+		    });	
+		}
+
+
+		// Guardar datos del nuevo cliente
+
+		function nuevoCliente(){
+
+			var empresa = $('#empresa').val()
+			var nombre = $('#nombre').val()
+			var telefono = $('#telefono').val()
+			var movil = $('#movil').val()
+			var otro = $('#otro').val()
+			var mail = $('#mail').val()
+			var nota = $('#nota').val()
+
+			$.ajax({
+		        url: 'http://192.168.1.72:8000/app/cliente/nuevo/', 
+		        type: 'POST',
+		        data: {id: sesion, empresa: empresa, nombre: nombre, telefono: telefono, movil: movil, otro: otro, mail: mail, nota: nota},
+		        dataType: 'json'
+		    }).done(function(data){
+		    	if (data.estatus==200)
+		    		if (data.mensaje.length == 2)
+		    			alert('Error de conexión')
+		    		else
+						$.mobile.changePage($('#lista-clientes'));
+		    });	
+
+		}
+
+
+		//Cargamos la lista de eventos, segun cada usuario
+		function cargaEventos(){
+	    	$('#agenda').empty();
+
+			$.ajax({
+			        url: 'http://192.168.1.72:8000/app/agenda/', 
+			        type: 'POST',
+			        data: {id: sesion},
+			        dataType: 'json'
+		    }).done(function(data){
+		    	if (data.estatus==200)
+		    		if (data.mensaje.length == 2)
+						$('#agenda').append(
+							$('<li>').html(
+								'No tienes compromisos'
+							)
+						);
+		    		else{
+		    			datos = $.parseJSON(data.mensaje);
+						
+						$.each(datos, function(key, val) {
+							$('#agenda').append(
+								$('<li>').append(
+									$('<a>').attr('href', '#').html(
+										'<h3>' + val['fields']['cliente'] + '</h3> <p><strong>' + val['fields']['asunto'] + '</strong></p> <p>' + val['fields']['detalle'] +'</p> <p class="ui-li-aside"><strong>'+ val['fields']['hora'] +'</strong></p>'
+									)
+								)
+							);
+		    			});
+
+		    		}
+
+		    	$('#agenda').listview('refresh');
+		    });	
+		}
+
+
+		function nuevoEvento(){
+
+			var asunto = $('#asunto').val()
+			var cliente = $('#cliente').val()
+			var fecha = $('#fecha').val()
+			var hora = $('#hora').val()
+			var detalle = $('#detalle').val()
+
+			$.ajax({
+			        url: 'http://192.168.1.72:8000/app/agenda/nuevo/', 
+			        type: 'POST',
+			        data: {id: sesion, asunto: asunto, detalle: detalle, fecha: fecha, hora: hora, cliente: cliente},
+			        dataType: "json"
+		    }).done(function(data){
+		    	if (data.estatus==200)
+					$.mobile.changePage($('#lista-agenda'));
+		    });	
+		}
+
+
+
+		function nuevaVisita(){
+
+			var asunto = $('#asunto_visita').val();
+			var cliente = localStorage.getItem('cliente_id');
+			var detalle = $('#detalle_visita').val();
+			var estatus = $('#estatus_visita').val();
+
+			var lat = localStorage.getItem('lat');
+			var lng = localStorage.getItem('lng');
+
+			$.ajax({
+			        url: 'http://192.168.1.72:8000/app/visita/nuevo/', 
+			        type: 'POST',
+			        data: {id: sesion, asunto: asunto, detalle: detalle, cliente: cliente, estatus: estatus, lat: lat, lng: lng},
+			        dataType: "json"
+		    }).done(function(data){
+		    	if (data.estatus==200)
+					$.mobile.changePage($('#lista-clientes'));
+		    });	
+		}
+
+
+		function nuevaVenta(){
+
+			var titulo = $('#titulo_venta').val();
+			var cliente = localStorage.getItem('cliente_id');
+			var detalle = $('#detalle_venta').val();
+			var costo = $('#costo_venta').val();
+			var fecha = $('#fecha_venta').val();
+
+			var lat = localStorage.getItem('lat');
+			var lng = localStorage.getItem('lng');
+
+			$.ajax({
+			        url: 'http://192.168.1.72:8000/app/venta/nuevo/', 
+			        type: 'POST',
+			        data: {id: sesion, titulo: titulo, detalle: detalle, cliente: cliente, fecha: fecha, costo: costo, lat: lat, lng: lng},
+			        dataType: "json"
+		    }).done(function(data){
+		    	if (data.estatus==200)
+					$.mobile.changePage($('#lista-clientes'));
+		    });	
+		}
+
+
+		//Cargamos la lista de trabajos segun cada usuario
+		function cargaCobros(){
+	    	$('#lista-trabajos').empty();
+
+	    	cliente = localStorage.getItem('cliente_id');
+
+			$.ajax({
+			        url: 'http://192.168.1.72:8000/app/trabajos/', 
+			        type: 'POST',
+			        data: {id: sesion, cliente: cliente},
+			        dataType: 'json'
+		    }).done(function(data){
+		    	if (data.estatus==200)
+		    		if (data.mensaje.length == 2)
+						$('#lista-trabajos').append(
+							$('<li>').html(
+								'No hay trabajos en la lista'
+							)
+						);
+		    		else{
+		    			var datos = $.parseJSON(data.mensaje);
+
+						$('#lista-trabajos').html(
+							"<li data-role='list-divider' id='titulo-cobros'> "+ localStorage.getItem('cliente_nombre') + "<span class='ui-li-count' id='cantidad-cobros'>"+ data['total'] +"</span></li>"
+						)
+						
+						$.each(datos, function(key, val) {
+							$('#lista-trabajos').append(
+								$('<li>').append(
+									$('<a>').attr('href', '#').attr('data-trabajo_id', val['pk']).html(
+										'<p><strong>' + val['fields']['titulo'] +'</strong></p> <p>' + val['fields']['detalle'] +'</p> <p class="ui-li-aside"><strong>Activo</strong></p>'
+									)
+								)
+							);
+		    			});
+
+		    		}
+
+		    	$('#lista-trabajos').listview('refresh');
+		    });	
+		}
+
+
+		function infoCobro(){
+
+			var venta = localStorage.getItem('venta');
+
+			$.ajax({
+			        url: 'http://192.168.1.72:8000/app/cobros/', 
+			        type: 'POST',
+			        data: {venta: venta},
+			        dataType: 'json'
+		    }).done(function(data){
+		    	if (data.estatus==200){
+					$('#cobro_datos h2').html(data.cliente)
+					$('#cobro_datos #nombre_trabajo').html('<strong>Trabajo:</strong>' + data.titulo)
+					$('#cobro_datos #detalle_trabajo').html('<strong>Detalle:</strong>' + data.detalle)
+					$('#total_cuenta').val(data.total)
+					$('#restante_cuenta').val(parseFloat(data.total)-parseFloat(data.restante))
+					$('#pagado_cuenta').val(data.restante)
+				}
+		    });	
+
+		}
+
+
+
+		function nuevoCobro(){
+
+			var venta = localStorage.getItem('venta');
+			var cobro = $('#cobro').val();
+			var lat = localStorage.getItem('lat');
+			var lng = localStorage.getItem('lng');
+
+			$.ajax({
+			        url: 'http://192.168.1.72:8000/app/cobros/nuevo/', 
+			        type: 'POST',
+			        data: {venta: venta, cobro: cobro, lat: lat, lng: lng},
+			        dataType: "json"
+		    }).done(function(data){
+		    	if (data.estatus==200)
+					$.mobile.changePage($('#acciones'));
+		    });	
+		}
+
+
+
+		function gps(){
+			navigator.geolocation.getCurrentPosition (function (pos){
+	  			var lat = pos.coords.latitude;
+	  			var lng = pos.coords.longitude;
+	  			localStorage.setItem('lat', lat);
+	  			localStorage.setItem('lng', lng);
+			});
+		}
+
+
+
+
+        $('#lista-clientes').live('pageshow', function() {
+        	$('input[type=text]').attr('value', '')
+        	cargaClientes();
+        });
+
+        $('#lista-agenda').live('pageshow', function() {
+        	cargaEventos();
+        });
+
+        $('#acciones').live('pageshow', function() {
+        	$('input[type=text]').attr('value', '')
+			$('#lista-acciones h2').html(localStorage.getItem('cliente_nombre'))
+        });
+
+
+        $('#nueva-venta').live('pageshow', function() {
+        	gps();
+        	$('input[type=text]').attr('value', '')
+			$('#cliente_venta').val(localStorage.getItem('cliente_nombre'))
+        });
+
+
+        $('#nueva-visita').live('pageshow', function() {
+        	gps();
+        	$('input[type=text]').attr('value', '')
+			$('#cliente_visita').val(localStorage.getItem('cliente_nombre'))
+        });
+
+
+
+        $('#historial-cobros').live('pageshow', function() {
+        	cargaCobros();
+        	$('input[type=text]').attr('value', '')
+        });
+
+
+        $('#nuevo-cobro').live('pageshow', function() {
+        	gps();
+        	infoCobro();
+        	$('input[type=text]').attr('value', '')
+			$('#cliente_visita').val(localStorage.getItem('cliente_nombre'))
+        });
+
+
+        
+
+        $(document).on('ready', function(){
+
+		$('#cobro').live('keyup', function(){
+
+			var cantidad  = parseFloat($('#cobro').val())
+			var pagado = parseFloat($('#pagado_cuenta').val())
+			var total = parseFloat($('#total_cuenta').val())
+			var resta = $('#restante_cuenta')
+
+			resta.val(total-(cantidad+pagado))
+
+		});
+
+	    // Botón de Inicio de Sesion
+	    	$('#hello').live('click', login);
+		
+		// Botón para Gardar Datos de Nuevo Cliente
+			$('#guarda-cliente').live('click', function () {
+				nuevoCliente();
+			});       	
+
+		// Botón para Guardar un Nuevo Evento
+			$('#guardar-evento').live('click', function () {
+				nuevoEvento();
+			});
+
+		// Botón que guarda ID y nombre del cliente seleccionado; para asignarle una Acción
+			$('#clientes li a').live('click', function(){
+				var cliente_id = $(this).attr('data-cliente_id');
+				var cliente_nombre = $(this).attr('data-cliente_nombre');
+
+				localStorage.setItem('cliente_id', cliente_id);
+				localStorage.setItem('cliente_nombre', cliente_nombre);
+
+				$.mobile.changePage('#acciones');
+			});
+
+
+		// Botón para guardar el ID de la VENTA seleccionada, y cargar formulario de cobro
+			$('#lista-trabajos li a').live('click', function() {
+				var venta = $(this).attr('data-trabajo_id');
+
+				localStorage.setItem('venta', venta);
+
+				$.mobile.changePage('#nuevo-cobro');
+
+			})
+
+		// Botón para Guardar una Nueva Visita
+			$('#guardar-visita').live('click', function () {
+				nuevaVisita();
+			});
+        	
+
+		// Botón para Guardar una Nueva Venta
+			$('#guardar-venta').live('click', function () {
+				nuevaVenta();
+			});
+
+
+		// Botón para Guardar una Nuevo Cobro
+			$('#guardar-cobro').live('click', function () {
+				nuevoCobro();
+			});
+
+
+        })
+
+		$(document).on('click', '[data-role="navbar"] a', function () {
+            $.mobile.changePage($(this).attr("data-href"), {
+                transition: "none",
+                changeHash: false
+        	});        	
+		    return false;
+		});
+
+
+
+
+
+    </script>
+
+
+<!--
+	<script type='text/javascript'>
+		$(document).on('ready', function() {
+			$.get('http://192.168.1.72:8000/hola', function(data) {
+				$('#carga').html();
+		    });
+		});
+	</script>
+-->
+</head> 
+<body> 
+
+
+	<!--	Inicio de Sesión	-->
+
+	<div data-role='page' id='login' data-theme='b'>
+
+
+		<div data-role='header' id='header'>
+			<h1><a href='/'>TieGPS</a></h1>
+		</div><!-- /header -->
+
+		<div data-role='content'>	
+			<img src='logo.png' style='display: block; margin: 1em auto;' />
+			<form>
+				<label>Usuario <input type='text' name='usuario' id='usuario' placeholder='Usuario' /> </label>
+				<label>Contraseña <input type='password' name='password' id='password' placeholder='Contraseña' /> </label>
+
+				<div id='carga'></div>
+				<a href='#' id='hello' data-role='button'>Iniciar Sesión</a>
+			</form>
+		</div>
+	</div>
+
+
+
+	<!--	Lista de Clientes	-->
+
+	<div data-role='page' id='lista-clientes' data-theme='b'>
+
+		<div data-role='header' id='header'>
+			<a href='#lista-clientes' data-role='button' data-icon='home' data-iconpos='notext' data-theme='b'>home</a>
+			<h1><a href='/'>TieGPS</a></h1>
+		</div><!-- /header -->
+
+		<div data-role='navbar' data-iconpos='top'>
+			<ul>
+				<li><a href='#' data-href='#lista-clientes' data-icon='search' class='ui-btn-active'>Clientes</a></li>
+<!--	
+			<li><a href='#' data-href='#lista-agenda' data-icon='grid'>Agenda</a></li>
+-->
+			</ul>
+		</div>
+
+		<div data-role='content'>
+
+			<a href='#nuevo-cliente' data-role='button' data-icon='plus' data-theme='e' style='margin-bottom: 1.5em;' data-transition='slide'>Nuevo cliente</a>
+
+			<!-- Aqui se cargan los clientes -->
+			<ul data-role='listview' data-theme='d' data-filter='true' data-filter-placeholder='Nombre...' data-autodividers='true' id='clientes'>
+
+			</ul>
+		</div>
+	</div>
+
+
+	<!-- Nuevo Cliente -->
+
+	<div data-role='page' id='nuevo-cliente' data-theme='b'>
+		<div data-role='header' id='header'>
+			<a href='#lista-clientes' data-role='button' data-icon='home' data-iconpos='notext' data-theme='b'>home</a>
+			<h1><a href='/'>TieGPS</a></h1>
+		</div><!-- /header -->
+
+		<div data-role='navbar' data-iconpos='top'>
+			<ul>
+				<li><a href='#' data-href='#lista-clientes' data-icon='search' >Clientes</a></li>
+<!--	
+			<li><a href='#' data-href='#lista-agenda' data-icon='grid'>Agenda</a></li>
+-->
+
+			</ul>
+		</div>		
+
+		<div data-role='content'>	
+			<a href='#lista-clientes' data-theme='b' data-role='button' data-transition='slide' data-icon='back' data-inline='true' style='margin: 1.5em 0;'>Volver</a>
+
+			<form>
+				<label>Nombre Empresa <input type='text' id='empresa' /> </label>
+				<label>Nombre Contacto <input type='text' id='nombre' /> </label>
+				<label>Teléfono <input type='tel' id='telefono' /> </label>
+				<label>Móvil <input type='tel' id='movil' /> </label>
+				<label>Otro <input type='text' id='otro' placeholder='Casa, radio, 01800...' /> </label>
+				<label>Mail <input type='email' id='mail' placeholder='@' /> </label>
+				<label>Nota <textarea id='nota'></textarea>
+
+				<a href='#' id='guarda-cliente' data-role='button' data-transition='slide' data-icon='check' style='margin: 1.5em 0;'>Guardar</a>
+
+			</form>
+		</div>
+	</div>
+
+
+	<!--	Lista de eventos	-->
+
+	<div data-role='page' id='lista-agenda' data-theme='b'>
+		<div data-role='header' id='header'>
+			<a href='#lista-clientes' data-role='button' data-icon='home' data-iconpos='notext' data-theme='b'>home</a>
+			<h1><a href='/'>TieGPS</a></h1>
+		</div><!-- /header -->
+
+		<div data-role='navbar' data-iconpos='top'>
+			<ul>
+				<li><a href='#' data-href='#lista-clientes' data-icon='search' >Clientes</a></li>
+<!--	
+			<li><a href='#' data-href='#lista-agenda' data-icon='grid'>Agenda</a></li>
+-->
+
+			</ul>
+		</div>	
+
+		<div data-role='content'>
+			<a href='#nuevo-evento' data-role='button' data-icon='plus' data-theme='e' style='margin-bottom: 2em;'>Nuevo recordatorio</a>
+
+			<!-- Aquí se cargan los eventos -->
+			<ul data-role='listview' data-theme='d' data-divider-theme='b' class='ui-listview' id='agenda'>
+
+			</ul>
+
+		</div>
+	</div>
+
+
+	<!--	Nuevo evento	-->
+
+	<div data-role='page' id='nuevo-evento' data-theme='b'>
+		<div data-role='header' id='header'>
+			<a href="#lista-clientes" data-role="button" data-icon="home" data-iconpos="notext" data-theme='d'>home</a>
+			<h1><a href='/'>TieGPS</a></h1>
+		</div><!-- /header -->
+
+		<div data-role='navbar' data-iconpos='top'>
+			<ul>
+				<li><a href='#' data-href='#lista-clientes' data-icon='search' >Clientes</a></li>
+<!--	
+			<li><a href='#' data-href='#lista-agenda' data-icon='grid'>Agenda</a></li>
+-->
+
+			</ul>
+		</div>	
+
+		<div data-role='content'>	
+			<a href='#lista-agenda' data-theme='b' data-role='button' data-transition='slide' data-icon='back' data-inline='true' style='margin: 1.5em 0;'>Volver</a>
+
+			<form>
+				<label>Nombre del evento <input type='text' name='asunto' id='asunto' placeholder='Reunion, comida, entrega de trabajo' /> </label>
+				<label>Cliente <input type='text' name='cliente' id='cliente' placeholder='Empresa' /> </label>
+				<label>Fecha <input type='date' name='fecha' id='fecha' /> </label>
+				<label>Hora <input type='time' name='hora' id='hora' /> </label>
+				<label>Detalle <textarea name='detalle' id='detalle'></textarea></label>
+
+				<a href='#' id='guardar-evento' data-role='button' data-transition='slide' data-icon='check' style='margin: 1.5em 0;'>Crear nuevo</a>
+
+			</form>
+
+		</div>
+	</div>
+
+
+<!--	Acciones para cada cliente	-->
+
+	<div data-role='page' id='acciones' data-theme='b'>
+		<div data-role='header' id='header'>
+			<a href="#lista-clientes" data-role="button" data-icon="home" data-iconpos="notext" data-theme='d'>home</a>
+			<h1><a href='/'>TieGPS</a></h1>
+		</div><!-- /header -->
+
+		<div data-role='navbar' data-iconpos='top'>
+			<ul>
+				<li><a href='#' data-href='#lista-clientes' data-icon='search' >Clientes</a></li>
+<!--	
+			<li><a href='#' data-href='#lista-agenda' data-icon='grid'>Agenda</a></li>
+-->
+
+			</ul>
+		</div>
+
+		<div data-role='content' id='lista-acciones'  data-position="right" data-display="reveal">	
+			<a href='#lista-clientes' data-theme='b' data-role='button' data-transition='slide' data-icon='back' data-inline='true' style='margin: 1.5em 0;'>Volver</a>
+			
+			<h2></h2>
+
+			<ul data-role='listview' data-theme='d' data-inset='true'>
+				<li><a href='#nueva-visita'>Visita</a></li>
+				<li><a href='#nueva-venta'>Venta</a></li>
+				<li><a href='#historial-cobros'>Cobros</a></li>
+				<li><a href='#info-cliente'>Información de contacto</a></li>
+			</ul>
+
+		</div><!-- /content -->
+
+	</div><!-- /page -->
+
+
+
+	<!--
+		***
+		***		A C C I O N E S   P A R A   C L I E  N T E S 
+		***
+	 -->
+
+
+	<!--	Nueva Visita	-->
+
+	<div data-role='page' id='nueva-visita' data-theme='b'>
+		<div data-role='header' id='header'>
+			<a href="#lista-clientes" data-role="button" data-icon="home" data-iconpos="notext" data-theme='d'>home</a>
+			<h1><a href='/'>TieGPS</a></h1>
+		</div><!-- /header -->
+
+		<div data-role='navbar' data-iconpos='top'>
+			<ul>
+				<li><a href='#' data-href='#lista-clientes' data-icon='search'>Clientes</a></li>
+<!--	
+			<li><a href='#' data-href='#lista-agenda' data-icon='grid'>Agenda</a></li>
+-->
+
+			</ul>
+		</div>
+
+		<div data-role='content'>	
+			<a href='#acciones' data-theme='b' data-role='button' data-transition='slide' data-icon='back' data-inline='true' style='margin: 1.5em 0;'>Volver</a>
+
+			<h2>Nueva Visita</h2>
+
+			<form>
+				<label>Cliente <input type='text' value='' id='cliente_visita' readonly='readonly' /> </label>
+				<label>Asunto <input type='text' id='asunto_visita' placeholder='comida, seguimiento, reunión' /> </label>
+				<label>¿Que tal te fue? </label>
+				<select name="estatus_visita" id="estatus_visita" data-role="slider">
+					<option value="1">Bien</option>
+					<option value="0">Mal</option>
+				</select> 
+				<label>Detalle <textarea id='detalle_visita' placeholder='¿Que paso?'></textarea></label>
+
+				<a href='#' id='guardar-visita' data-role='button' data-transition='slide' data-icon='check' style='margin: 1.5em 0;'>Guardar</a>
+
+			</form>
+
+		</div><!-- /content -->
+
+	</div><!-- /page -->
+
+
+
+
+	<!--	Nueva Venta	-->
+
+	<div data-role='page' id='nueva-venta' data-theme='b'>
+		<div data-role='header' id='header'>
+			<a href="#lista-clientes" data-role="button" data-icon="home" data-iconpos="notext" data-theme='d'>home</a>
+			<h1><a href='/'>TieGPS</a></h1>
+		</div><!-- /header -->
+
+		<div data-role='navbar' data-iconpos='top'>
+			<ul>
+				<li><a href='#' data-href='#lista-clientes' data-icon='search'>Clientes</a></li>
+<!--	
+			<li><a href='#' data-href='#lista-agenda' data-icon='grid'>Agenda</a></li>
+-->
+
+			</ul>
+		</div>
+
+		<div data-role='content'>	
+			<a href='#acciones' data-theme='b' data-role='button' data-transition='slide' data-icon='back' data-inline='true' style='margin: 1.5em 0;'>Volver</a>
+
+			<h2>Nueva Venta</h2>
+
+			<form>
+				<label>Cliente <input type='text' id='cliente_venta' value='' readonly='readonly' /> </label>
+				<label>¿Que vendiste? <input type='text' id='titulo_venta' placeholder='producto, servicio vendido' /> </label>
+				<label>Dime más detalles<textarea id='detalle_venta' placeholder='Ej.: Color, tamaño, cantidad, material ó lista de productos'></textarea></label>
+				<label>¿Cual será su costo? <input id='costo_venta' type='text' placeholder='0.0' /> </label>
+				<label>¿Cuando se entrega?<input id='fecha_venta' placeholder='aaaa/mm/dd' type='date' /> </label>
+
+
+				<a href='#' id='guardar-venta' data-role='button' data-transition='slide' data-icon='check' style='margin: 1.5em 0;'>Guardar</a>
+
+			</form>
+		</div><!-- /content -->
+	</div><!-- /page -->
+
+
+
+	<!--	Lista de Trabajos/Cobros	-->
+
+	<div data-role='page' id='historial-cobros' data-theme='b'>
+		<div data-role='header' id='header'>
+			<a href="#lista-clientes" data-role="button" data-icon="home" data-iconpos="notext" data-theme='d'>home</a>
+			<h1><a href='/'>TieGPS</a></h1>
+		</div><!-- /header -->
+
+		<div data-role='content'>	
+			<a href='#acciones' data-theme='b' data-role='button' data-transition='slide' data-icon='back' data-inline='true' style='margin-bottom: 2em;'>Volver</a>
+
+			<h2>Cobros</h2>
+
+			<ul id='lista-trabajos' data-role="listview" data-theme="d" data-divider-theme="b" class="ui-listview">
+				
+			</ul>
+		</div>
+	</div><!-- /page -->
+
+
+
+	<!--	Nuevo Cobro	-->
+
+	<div data-role='page' id='nuevo-cobro' data-theme='b'>
+		<div data-role='header' id='header'>
+			<a href="/" data-role="button" data-icon="home" data-iconpos="notext" data-theme='d'>home</a>
+			<h1><a href='/'>TieGPS</a></h1>
+		</div><!-- /header -->
+
+		<div data-role='navbar' data-iconpos='top'>
+			<ul>
+				<li><a href='#' data-href='#lista-clientes' data-icon='search'>Clientes</a></li>
+<!--	
+			<li><a href='#' data-href='#lista-agenda' data-icon='grid'>Agenda</a></li>
+-->
+
+			</ul>
+		</div>
+
+		<div data-role='content' id='detalle-cobro'>	
+			<a href='#historial-cobros' data-theme='b' data-role='button' data-transition='slide' data-icon='back' data-inline='true' style='margin: 1.5em 0;'>Volver</a>
+
+			<div id='cobro_datos'>
+				<h2></h2>
+
+				<p id='nombre_trabajo'></p>
+				<p id='detalle_trabajo'></p>
+			</div>
+
+			<form>
+				<label>El pago es por la cantidad de <input id='cobro' type='text' placeholder='0.0' /> </label>
+				<label>Total <input id='total_cuenta' type='text' value='' readonly='readonly' /> </label>
+				<label>Pagado <input id='pagado_cuenta' value='' type='text' readonly='readonly' /> </label>
+				<label>Restante <input id='restante_cuenta' value='' type='text' readonly='readonly' /> </label>
+
+				<a href='#' id='guardar-cobro' data-role='button' data-transition='slide' data-icon='check' style='margin: 1.5em 0;'>Guardar</a>
+
+			</form>
+
+		</div><!-- /content -->
+	</div><!-- /page -->
+
+
+
+</body>
+</html>

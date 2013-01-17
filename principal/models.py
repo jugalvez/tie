@@ -35,11 +35,12 @@ class Facturacion(models.Model):
 class Visita(models.Model):
 	titulo = models.CharField(max_length = 50)
 	nota = models.TextField()
-	estatus = models.BooleanField()
-	lat = models.FloatField()
-	lon = models.FloatField()
+	estatus = models.BooleanField(blank = True, default = 1)
+	lat = models.FloatField(blank = True, null = True)
+	lon = models.FloatField(blank = True, null = True)
 	fecha = models.DateField(auto_now = True)
 	cliente = models.ForeignKey(Cliente)
+	usuario = models.ForeignKey(User)
 
 	def __unicode__(self):
 		return self.titulo
@@ -51,9 +52,10 @@ class Venta(models.Model):
 	costo_produccion = models.FloatField(blank = True, default = 0)
 	precio_venta = models.FloatField(blank = True, default = 0)
 	fecha_entrega = models.DateField(blank = True, null = True)
-	lat = models.FloatField()
-	lon = models.FloatField()
+	lat = models.FloatField(blank = True, null = True)
+	lon = models.FloatField(blank = True, null = True)
 	cliente = models.ForeignKey(Cliente)
+	usuario = models.ForeignKey(User)
 
 	def __unicode__(self):
 		return self.titulo

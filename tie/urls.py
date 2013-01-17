@@ -20,7 +20,14 @@ urlpatterns = patterns('',
 	
 	url(r'^hola/$', 'app.views.hola'),
 	url(r'^app/clientes/$', 'app.views.clientes'),
-	
+	url(r'^app/cliente/nuevo/$', 'app.views.nuevoCliente'),
+	url(r'^app/agenda/$', 'app.views.agenda'),
+	url(r'^app/agenda/nuevo/$', 'app.views.nuevoEvento'),
+	url(r'^app/visita/nuevo/$', 'app.views.visita'),
+	url(r'^app/venta/nuevo/$', 'app.views.venta'),
+	url(r'^app/trabajos/$', 'app.views.trabajos'),
+	url(r'^app/cobros/$', 'app.views.cobros'),
+	url(r'^app/cobros/nuevo/$', 'app.views.nuevoCobro'),
 
 	url(r'^logout/$', 'principal.views.salir'),
 
