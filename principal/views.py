@@ -7,7 +7,6 @@ from principal.forms import DatosForm, ClienteForm, FacturacionForm, AgendaForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login as auth_login, authenticate, logout
-
 from django.contrib.auth.decorators import login_required
 
 
@@ -116,6 +115,44 @@ def nuevoCliente(request):
 
 
 @login_required(login_url='/login')
+def editarCliente(request, id_cliente):
+	
+	Qform = Cliente.objects.get(pk = id_cliente)
+
+	if request.method == 'POST':
+		# Recibimos el ID del cliente, lo buscamos en la BD, asignamos al Form y actualizamos
+		idPost = request.POST.get('id')
+		Qform = Cliente.objects.get(pk = idPost)
+		formulario = ClienteForm(request.POST, instance = Qform)
+
+		#Si el formulario es valido, actualizamos el nuevo registro; asignamos campos manualmente a FacturacionForm
+		if formulario.is_valid():
+			formulario.save()
+
+			facturacion = Facturacion.objects.get(cliente_id = idPost)
+			form_facturacion = FacturacionForm(request.POST, instance = facturacion)
+
+			if form_facturacion.is_valid():
+				form_facturacion.save()		
+
+		return HttpResponseRedirect('/clientes/editar/%d' % int(idPost))
+	else:
+
+		formulario = ClienteForm(instance = Qform)
+		form_facturacion = FacturacionForm()
+
+	return render_to_response('nuevo-cliente.html', {'formulario': formulario, 'form_facturacion': form_facturacion, 'cliente': id_cliente}, context_instance=RequestContext(request))
+
+
+@login_required(login_url='/login')
+def eliminarCliente(request, id_cliente):
+	borra = Cliente.objects.get(pk = id_cliente)
+	borra.delete()
+
+	return HttpResponseRedirect('/clientes/')
+
+
+@login_required(login_url='/login')
 def agenda(request):
 	eventos = Agenda.objects.filter(usuario_id = request.user.id)
 	return render_to_response('agenda.html', {'eventos': eventos}, context_instance=RequestContext(request))
@@ -134,6 +171,20 @@ def nuevoEvento(request):
 		formulario = AgendaForm()
 
 	return render_to_response('nuevo-evento.html', {'formulario': formulario}, context_instance=RequestContext(request))
+
+
+
+@login_required(login_url='/login')
+def estadisticaCliente(request, id_cliente):
+	visitas = Visita.objects.filter(cliente = id_cliente).order_by('-fecha')
+	#buenas = Visita.objects.extra(select = { 'total': 'SELECT count(*) FROM principal_visita WHERE estatus = 1 GROUP BY fecha'})
+	#ventas = Venta.objects.filter(cliente = id_cliente).order_by('-pk')
+	#cobros = Pago.objects.filter(venta.cliente = id_cliente)
+	cliente = Cliente.objects.get(pk = id_cliente)
+
+	return render_to_response('estadistica-cliente.html', {'cliente': cliente, 'visitas': visitas}, context_instance=RequestContext(request))
+
+
 
 
 @login_required(login_url='/login')

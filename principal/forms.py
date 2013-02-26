@@ -18,7 +18,7 @@ class ClienteForm(ModelForm):
 
 class FacturacionForm(ModelForm):
 	class Meta:
-		model = Facturacion		
+		model = Facturacion
 		exclude = ('cliente')
 
 class AgendaForm(ModelForm):

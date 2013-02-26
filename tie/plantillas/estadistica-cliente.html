@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block titulo %}
+	Tie GPS | {{ cliente.empresa|title }} - Estadísticas
+{% endblock %}
+
+
+{% block header %}
+<!--
+	<script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=AIzaSyBHuN8uoJ120sWGydaRtbanZyjL1J-FwII&amp;hl=en"></script>
+	<script type="text/javascript" src="http://gmap.nurtext.de/js/jquery.gmap-1.1.0-min.js"></script>
+-->
+
+	<script src="http://www.google.com/jsapi?key=AIzaSyBHuN8uoJ120sWGydaRtbanZyjL1J-FwII"></script>
+	<script charset="utf-8">
+		google.load("maps", "2.x");
+	</script>
+
+
+	<script src="http://code.highcharts.com/highcharts.js"></script>
+	<script src="http://code.highcharts.com/modules/exporting.js"></script>
+
+	<script type="text/javascript">
+
+		$(document).on('ready', function(e){
+
+			// Mapa
+			var map = new GMap2(document.getElementById('mapa1'));
+			var burnsvilleMN = new GLatLng(19.245195, -103.733425);
+			map.setCenter(burnsvilleMN, 12); 
+			var bounds = map.getBounds(); 
+			var markers = []; 
+
+			total = {{ visitas.count }}
+			
+			var markLat = [{% for visita in visitas %}{{ visita.lat }}, {% endfor %}]
+			var markLon = [{% for visita in visitas %}{{ visita.lon }}, {% endfor %}]
+			var markTitulo = [{% for visita in visitas %}'{{ visita.titulo }}', {% endfor %}]
+			var markFecha = [{% for visita in visitas %}'{{ visita.fecha }}', {% endfor %}]
+
+			for (var i = 0; i<total; i++) { 
+				var point = new GLatLng(markLat[i], markLon[i]); 
+				marker = new GMarker(point);
+				map.addOverlay(marker);
+				markers[i] = marker;
+			}
+	
+			$(markers).each(function(i, marker){ 
+				GEvent.addListener(marker, 'click', function(){ 
+			    	map.panTo(marker.getLatLng()); 
+				}); 
+
+				$('<li />').html(markTitulo[i]).click(function(){
+					map.panTo(marker.getLatLng()); 
+				}).appendTo('#lista_puntos');
+
+			});
+
+
+
+			// Grafica
+			 chart = new Highcharts.Chart({
+			            chart: {
+			                renderTo: 'grafica',
+			                type: 'line',
+			                marginRight: 130,
+			                marginBottom: 25
+			            },
+			            title: {
+			                text: 'Visitas Buenas Vs Malas',
+			                x: -20 //center
+			            },
+			            xAxis: {
+			                categories: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31']
+			            },
+			            yAxis: {
+			                title: {
+			                    text: 'Cantidad de Visitas'
+			                },
+			                plotLines: [{
+			                    value: 0,
+			                    width: 1,
+			                    color: '#808080'
+			                }]
+			            },
+			            tooltip: {
+			                formatter: function() {
+			                        return '<b>'+ this.series.name +'</b><br/>'+
+			                        'Día: ' + this.x + '</b><br/>' +
+			                        'Total: ' + ': '+ this.y;
+			                }
+			            },
+			            legend: {
+			                layout: 'vertical',
+			                align: 'right',
+			                verticalAlign: 'top',
+			                x: -10,
+			                y: 100,
+			                borderWidth: 0
+			            },
+			            series: [{
+			                name: 'Buenas',
+			                {% for b in buenas %}
+		                		data: [{{ b.total }}, ]
+		                	{% endfor %}
+			            }, {
+			                name: 'Malas',
+			                data: [2, 1, 0, 4, 2, 7, 3, 2, 1, 0, 4, 2, 7, 3, 2, 1, 0, 4, 2, 7, 3, 2, 1, 0, 4, 2, 7, 3, 0, 5, 4]
+			            }]
+			        });
+			    
+				// Fin Grafica
+			});
+
+	</script>
+
+
+	<style type="text/css">
+		#ppal{
+			margin-top: 6%;
+		}
+	</style>
+
+{% endblock %}
+
+{% block menu %}
+	<span style='color: #fff;'>|</span>
+	<a href='/datos'>Mis Datos</a>
+	<a href='/clientes' class='activo'>Clientes</a>
+<!--
+	<a href='/agenda' class='activo'>Agenda</a>
+-->
+
+	<a href='/logout'>Cerrar Sesión</a>
+{% endblock %}
+
+
+{% block contenido %}
+
+	<h1>{{ cliente.empresa|title }}</h1>
+	<h2>Visitas</h2>
+
+	<ul id='lista_puntos'>
+	</ul>
+
+	<div class='mapa' id='mapa1'>
+		
+	</div>
+
+	<div class='grafica' id='grafica' >
+
+	</div>
+
+
+{% endblock %}

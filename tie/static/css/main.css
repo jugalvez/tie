@@ -176,3 +176,93 @@ form input[type='text'],form input[type='password'], textarea{
 #lista .datos-cliente p span{
 	font-weight: bold;
 }
+
+
+
+/*
+		LISTADOS
+*/
+
+
+#tabla{
+	width: 960px;
+}
+
+#tabla tr{
+
+	text-align: center;
+}
+
+#tabla th{
+	color: #333;
+	padding: 1em 0;
+}
+
+#tabla td{
+	border-bottom: 1px solid #999;
+	padding: 0.5em 0;
+}
+
+#tabla .opcs{
+	font-size: 0.8em;
+}
+
+#tabla td > a span{
+	background: url(http://twitter.github.com/bootstrap/assets/img/glyphicons-halflings.png) 0 0 no-repeat;
+	display: inline-block;
+	line-height: 14px;
+	margin-right: 0.4em;
+	height: 14px;
+	width: 14px;
+}
+
+.estadisticas > span{
+	background-position: -408px 0 !important;
+}
+
+.editar > span{
+	background-position: -96px -72px !important;
+}
+
+.eliminar > span{
+	background-position: -456px 0 !important;
+}
+
+
+
+/*
+		ESTADISTICAS POR CLIENTE
+*/
+
+
+#lista_puntos{
+	display: inline-block;
+	height: 270px;
+	overflow-y: scroll;
+	margin: 0 5% 0 2%; 
+	padding: 0 2%;
+	width: 30%;
+}
+
+#lista_puntos li{
+	border-bottom: 0.1em solid #ccc;
+	display: block;
+	margin: 0 2.5% 0 0;
+	padding: 2% 0;
+	width: 100%;
+	vertical-align: top;
+}
+
+.mapa{
+	border: 1px dashed #000;
+	display: inline-block;
+	height: 270px;
+	vertical-align: top;
+	width: 55%;
+}
+
+.grafica{
+	height: 450px;
+	margin-top: 5%;
+	width: 100%;
+}

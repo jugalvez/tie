@@ -171,7 +171,7 @@ def venta(request):
 
 		venta = Venta(titulo = titulo, detalle = detalle, precio_venta = costo, fecha_entrega = fecha, lat = lat, lon = lng , cliente_id = cliente, usuario_id = usuario)
 		venta.save()
-		pago = Pago(venta = venta.id, pago = 0, lat = lat, lon = lng)
+		pago = Pago(venta = venta, pago = 0, lat = lat, lon = lng)
 		pago.save()
 
 		respuesta['estatus'] = 200
