@@ -246,6 +246,7 @@ form input[type='text'],form input[type='password'], textarea{
 
 #lista_puntos li{
 	border-bottom: 0.1em solid #ccc;
+	cursor: pointer;
 	display: block;
 	margin: 0 2.5% 0 0;
 	padding: 2% 0;
@@ -261,8 +262,25 @@ form input[type='text'],form input[type='password'], textarea{
 	width: 55%;
 }
 
+#mensaje {
+	background: #555;
+	border-radius: 5px;
+	color: #fff;
+	padding: 10px;
+	position: absolute;
+	width: 175px; 
+}
+
 .grafica{
+	display: none;
 	height: 450px;
 	margin-top: 5%;
 	width: 100%;
+}
+
+.subcategorias{
+	display: inline-block;
+	margin: 4% 0 5% 2%;
+	vertical-align: top;
+	width: 30%;
 }

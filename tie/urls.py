@@ -16,8 +16,13 @@ urlpatterns = patterns('',
 	url(r'^agenda/$', 'principal.views.agenda'),
 	url(r'^agenda/nuevo/$', 'principal.views.nuevoEvento'),
 
-	url(r'^estadisticas/visitas/(?P<id_cliente>\d+)/$', 'principal.views.estadisticaCliente'),
+	# Estadisticas por cliente
 	
+	url(r'^estadisticas/visitas/(?P<id_cliente>\d+)/$', 'principal.views.estadisticasVisitas'),
+	url(r'^estadisticas/ventas/(?P<id_cliente>\d+)/$', 'principal.views.estadisticasVentas'),
+	url(r'^estadisticas/cobros/(?P<id_cliente>\d+)/$', 'principal.views.estadisticasCobros'),
+
+
 	url(r'^clientes/editar/(?P<id_cliente>\d+)/$', 'principal.views.editarCliente'),
 	url(r'^clientes/eliminar/(?P<id_cliente>\d+)/$', 'principal.views.eliminarCliente'),
 

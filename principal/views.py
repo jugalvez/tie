@@ -103,7 +103,7 @@ def nuevoCliente(request):
 			form_facturacion = FacturacionForm(request.POST, instance = facturacion)
 
 			# Si es valido, guardamos el nuevo registro
-			if form_facturacion.is_valid:
+			if form_facturacion.is_valid():
 				form_facturacion.save()
 		
 			return HttpResponseRedirect('/clientes')
@@ -118,6 +118,7 @@ def nuevoCliente(request):
 def editarCliente(request, id_cliente):
 	
 	Qform = Cliente.objects.get(pk = id_cliente)
+	Qform_facturacion = Facturacion.objects.get(cliente_id = id_cliente)
 
 	if request.method == 'POST':
 		# Recibimos el ID del cliente, lo buscamos en la BD, asignamos al Form y actualizamos
@@ -139,7 +140,7 @@ def editarCliente(request, id_cliente):
 	else:
 
 		formulario = ClienteForm(instance = Qform)
-		form_facturacion = FacturacionForm()
+		form_facturacion = FacturacionForm(instance = Qform_facturacion)
 
 	return render_to_response('nuevo-cliente.html', {'formulario': formulario, 'form_facturacion': form_facturacion, 'cliente': id_cliente}, context_instance=RequestContext(request))
 
@@ -175,15 +176,29 @@ def nuevoEvento(request):
 
 
 @login_required(login_url='/login')
-def estadisticaCliente(request, id_cliente):
+def estadisticasVisitas(request, id_cliente):
 	visitas = Visita.objects.filter(cliente = id_cliente).order_by('-fecha')
 	#buenas = Visita.objects.extra(select = { 'total': 'SELECT count(*) FROM principal_visita WHERE estatus = 1 GROUP BY fecha'})
-	#ventas = Venta.objects.filter(cliente = id_cliente).order_by('-pk')
-	#cobros = Pago.objects.filter(venta.cliente = id_cliente)
 	cliente = Cliente.objects.get(pk = id_cliente)
 
-	return render_to_response('estadistica-cliente.html', {'cliente': cliente, 'visitas': visitas}, context_instance=RequestContext(request))
+	return render_to_response('estadisticas-visitas.html', {'cliente': cliente, 'visitas': visitas}, context_instance=RequestContext(request))
 
+
+@login_required(login_url='/login')
+def estadisticasVentas(request, id_cliente):
+	ventas = Venta.objects.filter(cliente = id_cliente).order_by('-pk')
+	cliente = Cliente.objects.get(pk = id_cliente)
+
+	return render_to_response('estadisticas-ventas.html', {'cliente': cliente, 'ventas': ventas}, context_instance=RequestContext(request))
+
+
+@login_required(login_url='/login')
+def estadisticasCobros(request, id_cliente):
+	ventas = Venta.objects.filter(cliente = id_cliente).order_by('-pk')
+	cobros = Pago.objects.filter(venta_id = ventas)
+	cliente = Cliente.objects.get(pk = id_cliente)
+
+	return render_to_response('estadisticas-cobros.html', {'cliente': cliente, 'cobros': cobros}, context_instance=RequestContext(request))
 
 
 

@@ -54,6 +54,7 @@ class Venta(models.Model):
 	fecha_entrega = models.DateField(blank = True, null = True)
 	lat = models.FloatField(blank = True, null = True)
 	lon = models.FloatField(blank = True, null = True)
+	fecha = models.DateField(auto_now = True)
 	cliente = models.ForeignKey(Cliente)
 	usuario = models.ForeignKey(User)
 
@@ -66,7 +67,8 @@ class Pago(models.Model):
 	pago = models.FloatField(blank = True, default = 0)
 	lat = models.FloatField()
 	lon = models.FloatField()
-
+	fecha = models.DateField(auto_now = True)
+	
 	def __unicode__(self):
 		return self.pago
 
