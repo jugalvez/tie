@@ -36,7 +36,8 @@
 			var markLat = [{% for venta in ventas %}{{ venta.lat }}, {% endfor %}]
 			var markLon = [{% for venta in ventas %}{{ venta.lon }}, {% endfor %}]
 			var markTitulo = [{% for venta in ventas %}'{{ venta.titulo }}', {% endfor %}]
-			var markFecha = [{% for venta in ventas %}'{{ venta.fecha_entrega }}', {% endfor %}]
+			var markDetalle = [{% for venta in ventas %}'{{ venta.detalle }}', {% endfor %}]
+			var markFecha = [{% for venta in ventas %}'{{ venta.fecha }}', {% endfor %}]
 
 			$('#mensaje').appendTo(map.getPane(G_MAP_FLOAT_SHADOW_PANE));
 
@@ -49,11 +50,11 @@
 	
 			$(markers).each(function(i, marker){ 
 				GEvent.addListener(marker, 'click', function(){ 
-			    	displayPoint(marker, i, markTitulo[i]); 
+			    	displayPoint(marker, i, markDetalle[i]); 
 				}); 
 
 				$('<li />').html(markTitulo[i] + '<br />' + markFecha[i]).click(function(){
-					displayPoint(marker, i, markTitulo[i]);
+					displayPoint(marker, i, markDetalle[i]);
 				}).appendTo('#lista_puntos');
 
 			});
@@ -62,8 +63,12 @@
 			function displayPoint(marker, i, title){
 				map.panTo(marker.getPoint()); 
 				var markerOffset = map.fromLatLngToDivPixel(marker.getPoint());
-				$('#mensaje').show().css({ top:markerOffset.y-25, left:markerOffset.x }); 
-				$('#mensaje').html(title)
+				if (!$('#mensaje').is(":visible")){
+					$('#mensaje').show().css({ top:markerOffset.y-25, left:markerOffset.x }); 
+					$('#mensaje').html(title)
+				}
+				else
+					$('#mensaje').hide(); 
 			}
 
 
@@ -136,9 +141,7 @@
 	<span style='color: #fff;'>|</span>
 	<a href='/datos'>Mis Datos</a>
 	<a href='/clientes' class='activo'>Clientes</a>
-<!--
-	<a href='/agenda' class='activo'>Agenda</a>
--->
+	<a href='/agenda'>Agenda</a>
 
 	<a href='/logout'>Cerrar Sesión</a>
 {% endblock %}
@@ -146,7 +149,7 @@
 
 {% block contenido %}
 
-	<h1>{{ cliente.empresa|title }}</h1>
+	<h1>{{ cliente.empresa }} - {{ cliente.nombre }}</h1>
 	
 	<h2 class='subcategorias'><a href='/estadisticas/visitas/{{ cliente.id }}'>Visitas</a></h2>
 	<h2 class='subcategorias'>Ventas</h2>

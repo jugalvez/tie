@@ -11,9 +11,21 @@
 			$('#lista .mas').on('click', function(){
 				$(this).next().toggle();
 				return false;
-			})
+			});
+
+			$('.eliminar').click(function(e){
+				e.preventDefault();
+				
+				if (confirm('Confirma borrado de cliente?')){		
+					url = $(this).attr('href');
+					window.location = url;
+				}
+			});
+
 		});
 	</script>
+
+
 
 	<style type='text/css'>
 		.detalles{
@@ -28,7 +40,6 @@
 		.detalles a{
 			color: #660000 !important;
 		}
-
 	</style>
 
 {% endblock %}
@@ -37,9 +48,7 @@
 	<span style='color: #fff;'>|</span>
 	<a href='/datos'>Mis Datos</a>
 	<a href='/clientes' class='activo'>Clientes</a>
-<!--
-	<a href='/agenda' class='activo'>Agenda</a>
--->
+	<a href='/agenda'>Agenda</a>
 
 	<a href='/logout'>Cerrar Sesión</a>
 {% endblock %}

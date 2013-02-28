@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from django.utils import simplejson
 from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt
+from datetime import datetime, timedelta, time
 
 
 
@@ -98,7 +99,8 @@ def agenda(request):
 	if request.method == 'POST':
 		id_usuario = request.POST.get('id')
 
-		agenda = Agenda.objects.filter(usuario_id = id_usuario).order_by('-id')
+		hoy = date.today()
+		agenda = Agenda.objects.filter(usuario_id = id_usuario).filter(fecha = hoy).order_by('-id')
 
 		respuesta['estatus'] = 200
 		respuesta['mensaje'] = serializers.serialize('json', agenda)

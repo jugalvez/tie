@@ -35,9 +35,9 @@
 			
 			var markLat = [{% for cobro in cobros %}{{ cobro.lat }}, {% endfor %}]
 			var markLon = [{% for cobro in cobros %}{{ cobro.lon }}, {% endfor %}]
-			var markTitulo = [{% for cobro in cobros %}'{{ cobro.titulo }}', {% endfor %}]
+			var markVenta = [{% for cobro in cobros %}'{{ cobro.venta.titulo }}', {% endfor %}]
 			var markFecha = [{% for cobro in cobros %}'{{ cobro.fecha }}', {% endfor %}]
-			var markMensaje = [{% for cobro in cobros %}'{{ cobro.pago }}', {% endfor %}]
+			var markMensaje = [{% for cobro in cobros %}'{{ cobro.venta.titulo }}: <br /><br /> Detalle: {{ cobro.venta.detalle }} <br /><br /> Pago: ${{ cobro.pago }}', {% endfor %}]
 
 			$('#mensaje').appendTo(map.getPane(G_MAP_FLOAT_SHADOW_PANE));
 
@@ -53,7 +53,7 @@
 			    	displayPoint(marker, i, markMensaje[i]); 
 				}); 
 
-				$('<li />').html(markTitulo[i] + '<br />' + markFecha[i]).click(function(){
+				$('<li />').html(markVenta + '<br />' + markFecha[i]).click(function(){
 					displayPoint(marker, i, markMensaje[i]);
 				}).appendTo('#lista_puntos');
 
@@ -63,8 +63,12 @@
 			function displayPoint(marker, i, title){
 				map.panTo(marker.getPoint()); 
 				var markerOffset = map.fromLatLngToDivPixel(marker.getPoint());
-				$('#mensaje').show().css({ top:markerOffset.y-25, left:markerOffset.x }); 
-				$('#mensaje').html('$'+title)
+				if (!$('#mensaje').is(":visible")){
+					$('#mensaje').show().css({ top:markerOffset.y-25, left:markerOffset.x }); 
+					$('#mensaje').html(title)
+				}
+				else
+					$('#mensaje').hide(); 
 			}
 
 
@@ -137,9 +141,8 @@
 	<span style='color: #fff;'>|</span>
 	<a href='/datos'>Mis Datos</a>
 	<a href='/clientes' class='activo'>Clientes</a>
-<!--
-	<a href='/agenda' class='activo'>Agenda</a>
--->
+	<a href='/agenda'>Agenda</a>
+
 
 	<a href='/logout'>Cerrar Sesión</a>
 {% endblock %}
@@ -147,7 +150,7 @@
 
 {% block contenido %}
 
-	<h1>{{ cliente.empresa|title }}</h1>
+	<h1>{{ cliente.empresa }} - {{ cliente.nombre }}</h1>
 	
 	<h2 class='subcategorias'><a href='/estadisticas/visitas/{{ cliente.id }}'>Visitas</a></h2>
 	<h2 class='subcategorias'><a href='/estadisticas/ventas/{{ cliente.id }}'>Ventas</a></h2>

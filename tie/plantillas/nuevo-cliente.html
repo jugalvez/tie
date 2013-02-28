@@ -8,9 +8,7 @@
 	<span style='color: #fff;'>|</span>
 	<a href='/datos'>Mis Datos</a>
 	<a href='/clientes' class='activo'>Clientes</a>
-<!--
-	<a href='/agenda' class='activo'>Agenda</a>
--->
+	<a href='/agenda'>Agenda</a>
 
 	<a href='/logout'>Cerrar Sesión</a>
 {% endblock %}
@@ -27,7 +25,9 @@
 
 		<ul>
 
-		<h2>Datos de Facturación</h2>
+		{% if form_facturacion %}
+			<h2>Datos de Facturación</h2>
+		{% endif %}
 
 		<ul>
 

@@ -266,9 +266,11 @@ form input[type='text'],form input[type='password'], textarea{
 	background: #555;
 	border-radius: 5px;
 	color: #fff;
+	font-size: .8em;
+	line-height: 1.2em;
 	padding: 10px;
 	position: absolute;
-	width: 175px; 
+	width: 200px;
 }
 
 .grafica{
@@ -284,3 +286,4 @@ form input[type='text'],form input[type='password'], textarea{
 	vertical-align: top;
 	width: 30%;
 }
+

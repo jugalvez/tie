@@ -70,7 +70,7 @@ class Pago(models.Model):
 	fecha = models.DateField(auto_now = True)
 	
 	def __unicode__(self):
-		return self.pago
+		return self.venta.titulo
 
 
 class Inventario(models.Model):

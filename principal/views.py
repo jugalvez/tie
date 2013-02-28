@@ -84,7 +84,7 @@ def datos(request):
 
 @login_required(login_url='/login')
 def clientes(request):
-	clientes = Cliente.objects.filter(usuario_id = request.user.id)
+	clientes = Cliente.objects.filter(usuario_id = request.user.id).order_by('empresa')
 	return render_to_response('lista-clientes.html', {'clientes': clientes}, context_instance=RequestContext(request))
 
 
@@ -100,18 +100,14 @@ def nuevoCliente(request):
 		if formulario.is_valid():
 			id_cliente = formulario.save()
 			facturacion = Facturacion(cliente_id = id_cliente.id)
-			form_facturacion = FacturacionForm(request.POST, instance = facturacion)
-
-			# Si es valido, guardamos el nuevo registro
-			if form_facturacion.is_valid():
-				form_facturacion.save()
+			facturacion.save()
 		
 			return HttpResponseRedirect('/clientes')
 	else:
 		formulario = ClienteForm()
 		form_facturacion = FacturacionForm()
 
-	return render_to_response('nuevo-cliente.html', {'formulario': formulario, 'form_facturacion': form_facturacion}, context_instance=RequestContext(request))
+	return render_to_response('nuevo-cliente.html', {'formulario': formulario}, context_instance=RequestContext(request))
 
 
 @login_required(login_url='/login')
@@ -155,7 +151,7 @@ def eliminarCliente(request, id_cliente):
 
 @login_required(login_url='/login')
 def agenda(request):
-	eventos = Agenda.objects.filter(usuario_id = request.user.id)
+	eventos = Agenda.objects.filter(usuario_id = request.user.id).order_by('-fecha')
 	return render_to_response('agenda.html', {'eventos': eventos}, context_instance=RequestContext(request))
 
 
@@ -195,7 +191,7 @@ def estadisticasVentas(request, id_cliente):
 @login_required(login_url='/login')
 def estadisticasCobros(request, id_cliente):
 	ventas = Venta.objects.filter(cliente = id_cliente).order_by('-pk')
-	cobros = Pago.objects.filter(venta_id = ventas)
+	cobros = Pago.objects.filter(venta_id = ventas).order_by('venta')
 	cliente = Cliente.objects.get(pk = id_cliente)
 
 	return render_to_response('estadisticas-cobros.html', {'cliente': cliente, 'cobros': cobros}, context_instance=RequestContext(request))

@@ -8,9 +8,7 @@
 	<span style='color: #fff;'>|</span>
 	<a href='/datos'>Mis Datos</a>
 	<a href='/clientes'>Clientes</a>
-<!--
-	<a href='/agenda' class='activo'>Agenda</a>
--->
+	<a href='/agenda'>Agenda</a>
 
 	<a href='/logout'>Cerrar Sesión</a>
 {% endblock %}
@@ -20,8 +18,8 @@
 	<img src='{{ STATIC_URL }}img/logo.png' id='logo' />
 
 	<p id='ventajas' style='width: 60%;'>
-		Hola {{ usuario }}, para iniciar te pedimos que <a href='/datos'>llenes tus datos</a> en el apartado '<a href='/datos'>Mis Datos</a>',
-		después puedes crear tu <a href=''>lista de clientes</a> y así empezar a crear ventas desde tu celular.
+		Hola {{ usuario }}, si es tu primera vez por aquí te pedimos que <a href='/datos'>llenes tus datos</a> en el apartado '<a href='/datos'>Mis Datos</a>',
+		ó puedes crear tu <a href=''>lista de clientes</a> y así empezar a registrar ventas desde tu celular.
 	</p>
 
 {% endblock %}
